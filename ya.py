@@ -5,7 +5,6 @@ import config
 class Ai():
     def __init__(self, messages: list) -> None:
         self.messages = messages
-        #print(self.messages, 'история сообщений')
 
     def new_prompt(self, text):
         new = {
@@ -14,6 +13,7 @@ class Ai():
                 }
         self.messages.append(new)
         #print(self.messages)
+    
     def asis_ans(self, text):
         new = {
                     "role": "assistant",
@@ -21,6 +21,7 @@ class Ai():
                 }
         self.messages.append(new)
         #print(self.messages)
+    
     def get_prompt(self):
         self.prompt = {
             "modelUri": f"gpt://{config.id_ya}/yandexgpt",
