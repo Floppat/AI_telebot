@@ -28,12 +28,8 @@ class DB_Manager:
                 }
             ]
         prompt = ya.Ai(messages).get_prompt()
-        #print(prompt)
-        #print(type(prompt))
         con = sqlite3.connect(self.database)
-        #print(prompt)
         prompt = json.dumps(prompt)
-        #print(prompt)
         with con:
             con.execute(f'''
                 INSERT INTO users (id, prompt) VALUES
@@ -61,9 +57,7 @@ class DB_Manager:
 
     def update(self, PK: int, prompt):
         con = sqlite3.connect(self.database)
-        #print(prompt)
         prompt = json.dumps(prompt)
-        #print(prompt)
         with con:
             con.execute(f'UPDATE users SET prompt = ? WHERE id = {PK}',(prompt,))
             con.commit()
