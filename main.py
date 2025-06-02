@@ -39,7 +39,6 @@ def echo_message(message): # message: telebot.types.Message
         ai.asis_ans(asis) # сохраняю ответ
         dab.update(message.chat.id, ai.get_prompt()) # обновляю бд
     elif (message.text is not None and ("@" + str(bot.get_me().username)) in message.text) or (message.reply_to_message is not None and message.reply_to_message.from_user.id == bot.get_me().id): # нечто сложное что написал не я
-        # print(message.from_user.full_name)
         bot.send_chat_action(message.chat.id,'typing')
         ai = ya.Ai(dab.read(message.chat.id)['messages']) # загрузка памяти
         ai.new_prompt(f'{message.from_user.full_name} написал: {message.text}') # вписываю запрос
@@ -50,7 +49,3 @@ def echo_message(message): # message: telebot.types.Message
         pass
 
 bot.infinity_polling()
-
-
-
-# (("@" + str(bot.get_me().username)) in message.text) or message.reply_to_message.from_user.id == bot.get_me().id:
