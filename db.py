@@ -1,12 +1,12 @@
 import sqlite3
-import ya
-import config
 import json
+
+from config import path
+
 
 class DB_Manager:
     def __init__(self, database_name: str):
         self.database = database_name
-
 
     def create_tables(self):
         con = sqlite3.connect(self.database)
@@ -14,52 +14,30 @@ class DB_Manager:
             con.execute('''
                 CREATE TABLE IF NOT EXISTS users(
                     id INTEGER PRIMARY KEY NOT NULL,
-                    prompt JSON NOT NULL
+                    history JSON NOT NULL
             )''')
             con.commit()
 
-
-    def new_user(self, user_id: int,):
-        messages = [
-                {
-                    'role':'system',
-                    'text': '''
-    ты бот задача которого поболтать с пользователем'''
-                }
-            ]
-        prompt = ya.Ai(messages).get_prompt()
+    def new_id(self, user_id: int, id_type):
+        if id_type == 'user':
+            text = 'ты бот задача которого поболтать с пользователем'
+        elif id_type == 'chat':
+            text = 'ты бот задача которого поболтать с пользователем. это - групповой чат. тут сообщения от разных пользователей.'
+        else:
+            print('type error')
+            return
+        messages = [{'role':'system', 'text': text}]
         con = sqlite3.connect(self.database)
-        prompt = json.dumps(prompt)
+        history = json.dumps(messages)
         with con:
-            con.execute(f'''
-                INSERT INTO users (id, prompt) VALUES
-                    (?,?)
-            ''', (user_id, prompt))
+            con.execute(f' INSERT INTO users (id, history) VALUES (?,?)', (user_id, history))
             con.commit()
 
-    def new_chat(self, user_id: int,):
-        messages = [
-                {
-                    'role':'system',
-                    'text': '''
-    ты бот задача которого поболтать с пользователем. это - групповой чат. тут сообщения от разных пользователей.'''
-                }
-            ]
-        prompt = ya.Ai(messages).get_prompt()
+    def update(self, PK: int, history):
         con = sqlite3.connect(self.database)
-        prompt = json.dumps(prompt)
+        history = json.dumps(history)
         with con:
-            con.execute(f'''
-                INSERT INTO users (id, prompt) VALUES
-                    (?,?)
-            ''', (user_id, prompt))
-            con.commit()
-
-    def update(self, PK: int, prompt):
-        con = sqlite3.connect(self.database)
-        prompt = json.dumps(prompt)
-        with con:
-            con.execute(f'UPDATE users SET prompt = ? WHERE id = {PK}',(prompt,))
+            con.execute(f'UPDATE users SET history = ? WHERE id = {PK}',(history,))
             con.commit()
         return 'успешно изменено'
     
@@ -69,13 +47,12 @@ class DB_Manager:
             con.execute(f'DELETE FROM users WHERE id = {PK}')
         return 'успешно удалено'
 
-
     def read(self, PK: int):
         con = sqlite3.connect(self.database)
         with con:
             cur = con.cursor()
-            return json.loads(cur.execute(f'SELECT prompt FROM users WHERE id = {PK}').fetchall()[0][0])
-
+            return json.loads(cur.execute(f'SELECT history FROM users WHERE id = {PK}').fetchall()[0][0])
+        
 if __name__=="__main__":
-    db = DB_Manager(config.path)
+    db = DB_Manager(path)
     db.create_tables()
