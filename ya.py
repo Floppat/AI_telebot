@@ -7,32 +7,13 @@ class Ai():
         self.messages = messages
 
     def new_prompt(self, text):
-        new = {
-                    "role": "user",
-                    "text": text
-                }
-        self.messages.append(new)
-        #print(self.messages)
-    
+        self.messages.append({"role": "user", "text": text})
+
     def asis_ans(self, text):
-        new = {
-                    "role": "assistant",
-                    "text": text
-                }
-        self.messages.append(new)
-        #print(self.messages)
-    
-    def get_prompt(self):
-        self.prompt = {
-            "modelUri": f"gpt://{config.id_ya}/yandexgpt",
-            "completionOptions": {
-                "stream": False,
-                "temperature": 0.4,
-                "maxTokens": "2000"
-            },
-            "messages": self.messages
-        }
-        return self.prompt
+        self.messages.append({"role": "assistant", "text": text})
+
+    def get_history(self):
+        return self.messages
     
     def gpt(self):
         self.prompt = {
@@ -45,7 +26,6 @@ class Ai():
             "messages": self.messages
         }
         
-        
         url = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
         headers = {
             "Content-Type": "application/json",
@@ -55,4 +35,3 @@ class Ai():
         response = requests.post(url, headers=headers, json=self.prompt)
         result = response.json().get('result')
         return result['alternatives'][0]['message']['text']
-    
